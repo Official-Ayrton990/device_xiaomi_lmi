@@ -44,34 +44,43 @@ def OTA_InstallEnd(info):
   AddImage(info, "dtbo.img", "/dev/block/bootdevice/by-name/dtbo")
   AddImage(info, "vbmeta.img", "/dev/block/bootdevice/by-name/vbmeta")
   AddImage(info, "vbmeta_system.img", "/dev/block/bootdevice/by-name/vbmeta_system")
+  return
+
+  fw_cmd = ""
+
+  fw_map = {
+      'cmnlib64.mbn': ['cmnlib64'],
+      'xbl_config_5.elf': ['xbl_config_5'],
+      'NON-HLOS.bin': ['modem'],
+      'cmnlib.mbn': ['cmnlib'],
+      'BTFM.bin': ['bluetooth'],
+      'km4.mbn': ['keymaster'],
+      'xbl_5.elf': ['xbl_5'],
+      'tz.mbn': ['tz'],
+      'aop.mbn': ['aop'],
+      'featenabler.mbn': ['featenabler'],
+      'xbl_config_4.elf': ['xbl_config_4'],
+      'storsec.mbn': ['storsec'],
+      'uefi_sec.mbn': ['uefisecapp'],
+      'qupv3fw.elf': ['qupfw'],
+      'abl.elf': ['abl'],
+      'dspso.bin': ['dsp'],
+      'devcfg.mbn': ['devcfg'],
+      'xbl_4.elf': ['xbl_4'],
+      'hyp.mbn': ['hyp'],
+      'cmnlib64.mbn': ['cmnlib64bak'],
+      'cmnlib.mbn': ['cmnlibbak'],
+      'tz.mbn': ['tzbak'],
+      'aop.mbn': ['aopbak'],
+      'storsec.mbn': ['storsecbak'],
+      'qupv3fw.elf': ['qupfwbak'],
+      'abl.elf': ['ablbak'],
+      'devcfg.mbn': ['devcfgbak'],
+      'hyp.mbn': ['hypbak']
+      }
 
   # Firmware
-  AddImageRadio(info, "cmnlib64.mbn", "/dev/block/bootdevice/by-name/cmnlib64");
-  AddImageRadio(info, "xbl_config_5.elf", "/dev/block/bootdevice/by-name/xbl_config_5");
-  AddImageRadio(info, "NON-HLOS.bin", "/dev/block/bootdevice/by-name/modem");
-  AddImageRadio(info, "cmnlib.mbn", "/dev/block/bootdevice/by-name/cmnlib");
-  AddImageRadio(info, "BTFM.bin", "/dev/block/bootdevice/by-name/bluetooth");
-  AddImageRadio(info, "km4.mbn", "/dev/block/bootdevice/by-name/keymaster");
-  AddImageRadio(info, "xbl_5.elf", "/dev/block/bootdevice/by-name/xbl_5");
-  AddImageRadio(info, "tz.mbn", "/dev/block/bootdevice/by-name/tz");
-  AddImageRadio(info, "aop.mbn", "/dev/block/bootdevice/by-name/aop");
-  AddImageRadio(info, "featenabler.mbn", "/dev/block/bootdevice/by-name/featenabler");
-  AddImageRadio(info, "xbl_config_4.elf", "/dev/block/bootdevice/by-name/xbl_config_4");
-  AddImageRadio(info, "storsec.mbn", "/dev/block/bootdevice/by-name/storsec");
-  AddImageRadio(info, "uefi_sec.mbn", "/dev/block/bootdevice/by-name/uefisecapp");
-  AddImageRadio(info, "qupv3fw.elf", "/dev/block/bootdevice/by-name/qupfw");
-  AddImageRadio(info, "abl.elf", "/dev/block/bootdevice/by-name/abl");
-  AddImageRadio(info, "dspso.bin", "/dev/block/bootdevice/by-name/dsp");
-  AddImageRadio(info, "devcfg.mbn", "/dev/block/bootdevice/by-name/devcfg");
-  AddImageRadio(info, "xbl_4.elf", "/dev/block/bootdevice/by-name/xbl_4");
-  AddImageRadio(info, "hyp.mbn", "/dev/block/bootdevice/by-name/hyp");
-  AddImageRadio(info, "cmnlib64.mbn", "/dev/block/bootdevice/by-name/cmnlib64bak");
-  AddImageRadio(info, "cmnlib.mbn", "/dev/block/bootdevice/by-name/cmnlibbak");
-  AddImageRadio(info, "tz.mbn", "/dev/block/bootdevice/by-name/tzbak");
-  AddImageRadio(info, "aop.mbn", "/dev/block/bootdevice/by-name/aopbak");
-  AddImageRadio(info, "storsec.mbn", "/dev/block/bootdevice/by-name/storsecbak");
-  AddImageRadio(info, "qupv3fw.elf", "/dev/block/bootdevice/by-name/qupfwbak");
-  AddImageRadio(info, "abl.elf", "/dev/block/bootdevice/by-name/ablbak");
-  AddImageRadio(info, "devcfg.mbn", "/dev/block/bootdevice/by-name/devcfgbak");
-  AddImageRadio(info, "hyp.mbn", "/dev/block/bootdevice/by-name/hypbak");
-  return
+  for fw in fw_map.keys():
+      for part in fw_map[fw]:
+          fw_cmd += 'package_extract_file("install/firmware-update/{}", "/dev/block/bootdevice/by-name/{}");\n'.format(fw, part)
+  info.script.AppendExtra(fw_cmd)
